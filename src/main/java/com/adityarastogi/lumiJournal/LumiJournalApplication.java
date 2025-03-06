@@ -9,5 +9,4 @@ public class LumiJournalApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LumiJournalApplication.class, args);
 	}
-
 }
