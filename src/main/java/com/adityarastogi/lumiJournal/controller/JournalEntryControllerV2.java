@@ -1,12 +1,15 @@
 package com.adityarastogi.lumiJournal.controller;
 
+
 import java.time.LocalDateTime;
 import java.util.*;
 
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adityarastogi.lumiJournal.entity.JournalEntry;
+import com.adityarastogi.lumiJournal.entity.User;
 import com.adityarastogi.lumiJournal.service.JournalEntryService;
+import com.adityarastogi.lumiJournal.service.UserService;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +31,14 @@ public class JournalEntryControllerV2 {
     @Autowired
     private JournalEntryService journalEntryService;
 
-    @GetMapping
-    public ResponseEntity<?> getAll(){
-        List<JournalEntry> all = journalEntryService.getAll();
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("{userName}")
+    public ResponseEntity<?> getAllJournalEntriesOfUser(@PathVariable String userName){
+        User user = userService.findByUserName(userName);  //gets the user object by username
+        List<JournalEntry> all = user.getJournalEntries(); //gets the journal entries of the user
+        
         if(all != null && !all.isEmpty()){
             return new ResponseEntity<>(all, HttpStatus.OK);
         }
@@ -69,9 +77,9 @@ public class JournalEntryControllerV2 {
         if(old != null){
             old.setTitle(newEntry.getTitle() != null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
             old.setContent(newEntry.getContent() != null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
+            journalEntryService.saveEntry(old);
             return new ResponseEntity<>(old, HttpStatus.OK);
         }
-        // journalEntryService.saveEntry(old);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         
     }

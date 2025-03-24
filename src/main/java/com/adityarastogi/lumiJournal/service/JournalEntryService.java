@@ -1,5 +1,6 @@
 package com.adityarastogi.lumiJournal.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,14 +11,22 @@ import org.springframework.stereotype.Component;
 import com.adityarastogi.lumiJournal.entity.JournalEntry;
 import com.adityarastogi.lumiJournal.repository.JournalEntryRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class JournalEntryService {
 
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
     public void saveEntry(JournalEntry journalEntry){
-        journalEntryRepository.save(journalEntry);
+        try{
+            journalEntry.setDate(LocalDateTime.now());
+            journalEntryRepository.save(journalEntry);
+        } catch (Exception e) {
+            log.error("Error saving journal entry", e);
+        }
     }
 
     public List<JournalEntry> getAll(){
