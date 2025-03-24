@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.mongodb.lang.NonNull;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 //A POJO class, or Plain Old Java Object class, is a Java class that is not restricted by any special frameworks or conventions. 
@@ -20,6 +21,7 @@ import lombok.Data;
 // @Setter
 @Document(collection = "journal_entries")
 @Data
+@NoArgsConstructor
 public class JournalEntry {
 
     @Id

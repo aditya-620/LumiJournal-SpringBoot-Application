@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.adityarastogi.lumiJournal.entity.JournalEntry;
+import com.adityarastogi.lumiJournal.entity.User;
 import com.adityarastogi.lumiJournal.repository.JournalEntryRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +21,24 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
-    public void saveEntry(JournalEntry journalEntry){
+    @Autowired
+    private UserService userService;
+
+    public void saveEntry(JournalEntry journalEntry, String userName){
         try{
+            User user = userService.findByUserName(userName);   //getting the user
             journalEntry.setDate(LocalDateTime.now());
-            journalEntryRepository.save(journalEntry);
+
+            JournalEntry saved = journalEntryRepository.save(journalEntry);  //.save is used to save the journal entry in the database
+            user.getJournalEntries().add(saved);   //.add is used to add the journal entry to the user's journal entries
+            userService.saveEntry(user);   
         } catch (Exception e) {
             log.error("Error saving journal entry", e);
         }
+    }
+
+    public void saveEntry(JournalEntry journalEntry){
+        journalEntryRepository.save(journalEntry);
     }
 
     public List<JournalEntry> getAll(){
@@ -37,7 +49,10 @@ public class JournalEntryService {
         return journalEntryRepository.findById(id);
     }
 
-    public void deleteById(ObjectId id){
+    public void deleteById(ObjectId id, String userName){
+        User user = userService.findByUserName(userName);
+        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+        userService.saveEntry(user);
         journalEntryRepository.deleteById(id);
     }
 }
