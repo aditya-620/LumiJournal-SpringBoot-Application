@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.adityarastogi.lumiJournal.entity.JournalEntry;
 import com.adityarastogi.lumiJournal.entity.User;
@@ -24,16 +25,23 @@ public class JournalEntryService {
     @Autowired
     private UserService userService;
 
+    @Transactional
     public void saveEntry(JournalEntry journalEntry, String userName){
         try{
             User user = userService.findByUserName(userName);   //getting the user
             journalEntry.setDate(LocalDateTime.now());
-
             JournalEntry saved = journalEntryRepository.save(journalEntry);  //.save is used to save the journal entry in the database
+
+
             user.getJournalEntries().add(saved);   //.add is used to add the journal entry to the user's journal entries
+
+            // user.setUserName(null);  //just to check transaction
+
             userService.saveEntry(user);   
         } catch (Exception e) {
-            log.error("Error saving journal entry", e);
+            // log.error("Error saving journal entry", e);
+            System.out.println(e);
+            throw new RuntimeException("Error saving journal entry", e);
         }
     }
 

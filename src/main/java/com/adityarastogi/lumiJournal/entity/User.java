@@ -39,6 +39,8 @@ public class User {
 
     //aap reference create kar rhe hai users collection ke ander, kiska reference create kar rhe hai? - JournalEntries ka refrence
     //yeh jo List<JournalEntry> journalEntries hai, vo refrence rakhengi , kiska - journal_entries(db) me jo entries pdi hai uska
+
+    private List<String> roles;
 }
 
 
