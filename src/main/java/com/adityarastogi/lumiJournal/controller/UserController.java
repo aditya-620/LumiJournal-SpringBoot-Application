@@ -1,9 +1,6 @@
 package com.adityarastogi.lumiJournal.controller;
 
 
-import java.net.Authenticator;
-import java.util.*;
-
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adityarastogi.lumiJournal.entity.User;
@@ -16,9 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +47,7 @@ public class UserController {
     
         userInDb.setUserName(user.getUserName());
         userInDb.setPassword(user.getPassword());
-        userService.saveEntry(userInDb);
+        userService.saveNewUser(userInDb);
         
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
