@@ -3,9 +3,11 @@ package com.adityarastogi.lumiJournal.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.adityarastogi.lumiJournal.apiResponse.WeatherResponse;
 import com.adityarastogi.lumiJournal.entity.User;
 import com.adityarastogi.lumiJournal.repository.UserRepository;
 import com.adityarastogi.lumiJournal.service.UserService;
+import com.adityarastogi.lumiJournal.service.WeatherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +31,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private WeatherService weatherService;
 
     
 
@@ -58,6 +64,17 @@ public class UserController {
         userRepository.deleteByUserName(authentication.getName());
         
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greeting(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
+        WeatherResponse weatherResponse = weatherService.getWeather("mumbai");
+        String greeting = "";
+        if(greeting != null){
+            greeting =  ", weather feels like " + weatherResponse.getCurrent().getFeelslike();
+        } 
+        return new ResponseEntity<>("Hi " + authentication.getName() + greeting, HttpStatus.OK);
     }
             
 }

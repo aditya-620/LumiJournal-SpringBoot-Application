@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.adityarastogi.lumiJournal.entity.JournalEntry;
@@ -15,7 +15,7 @@ import com.adityarastogi.lumiJournal.repository.JournalEntryRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Component
+@Service
 @Slf4j
 public class JournalEntryService {
 
