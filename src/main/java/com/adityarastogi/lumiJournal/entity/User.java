@@ -11,10 +11,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.mongodb.lang.NonNull;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "users")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     
     @Id
@@ -33,6 +37,9 @@ public class User {
 
     //@NonNull is used to ensure that the field is not null.
     //it is used to validate the field and throw an exception if the field is null.
+
+    private String email;
+    private boolean sentimentAnalysis;
 
     @DBRef
     private List<JournalEntry> journalEntries = new ArrayList<>();
