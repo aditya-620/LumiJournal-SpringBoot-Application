@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 import com.adityarastogi.lumiJournal.cache.AppCache;
 import com.adityarastogi.lumiJournal.entity.User;
 import com.adityarastogi.lumiJournal.service.UserService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
 @RequestMapping("/admin")
+@Tag(name = "Admin APIs", description = "Create and Read all users")
 public class AdminController {
     
     @Autowired

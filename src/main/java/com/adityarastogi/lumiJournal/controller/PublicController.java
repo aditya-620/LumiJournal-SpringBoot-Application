@@ -4,6 +4,7 @@ import com.adityarastogi.lumiJournal.service.UserService;
 import com.adityarastogi.lumiJournal.utils.JwtUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import com.adityarastogi.lumiJournal.entity.User;
 @RestController
 @Slf4j
 @RequestMapping("/public")
+@Tag(name = "Public APIs", description = "Sign up and login")
 public class PublicController {
 
     @Autowired
@@ -49,15 +51,26 @@ public class PublicController {
         return "OK";
     }
 
-    @PostMapping("/signup")
-    public void createUser(@RequestBody User user){
-        userService.saveNewUser(user);
+    // @PostMapping("/signup")
+    // public void createUser(@RequestBody User user){
+    //     userService.saveNewUser(user);
         
-        emailService.sendEmail(user.getEmail(), "Hi, " + user.getUserName(), "Welcome to Lumi Journal! \n\n" +
-                "We are excited to have you on board. \n\n" +
-                "Best regards, \n" +
-                "Lumi Journal Team");
+    //     emailService.sendEmail(user.getEmail(), "Hi, " + user.getUserName(), "Welcome to Lumi Journal! \n\n" +
+    //             "We are excited to have you on board. \n\n" +
+    //             "Best regards, \n" +
+    //             "Lumi Journal Team");
 
+    // }
+
+    @PostMapping("/signup")
+    @Operation(summary = "Sign up to the application")
+    public void signup(@RequestBody com.adityarastogi.lumiJournal.dto.UserDTO user) {
+        User newUser = new User();
+        newUser.setUserName(user.getUserName());
+        newUser.setPassword(user.getPassword());
+        newUser.setEmail(user.getEmail());
+        newUser.setSentimentAnalysis(user.isSentimentAnalysis());
+        userService.saveNewUser(newUser);
     }
 
     @PostMapping("/login")
@@ -77,5 +90,5 @@ public class PublicController {
         }
     }
 
-    
+
 }

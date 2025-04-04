@@ -11,6 +11,9 @@ import com.adityarastogi.lumiJournal.entity.User;
 import com.adityarastogi.lumiJournal.service.JournalEntryService;
 import com.adityarastogi.lumiJournal.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @RestController
 @RequestMapping("/journal")
+@Tag(name = "Journal Entry APIs", description = "Create, Read, Update, and Delete journal entries")
 public class JournalEntryControllerV2 {
     
     @Autowired
@@ -42,6 +46,7 @@ public class JournalEntryControllerV2 {
     //before we were taking the username from the api, but now we are taking it from the authentication
 
     @GetMapping()
+    @Operation(summary = "Get all journal entries of the authenticated user")
     public ResponseEntity<?> getAllJournalEntriesOfUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
@@ -55,6 +60,7 @@ public class JournalEntryControllerV2 {
     }
     
     @PostMapping
+    @Operation(summary = "Get a journal entry by its id")
     public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry myEntry){
         try {
             //what is myEntry? does it contain something?
@@ -71,16 +77,20 @@ public class JournalEntryControllerV2 {
     }
 
     @GetMapping("id/{myId}")
-    public ResponseEntity<JournalEntry> getJournalEntryById(@PathVariable ObjectId myId){
+    @Operation(summary = "Create a journal entry")
+    public ResponseEntity<JournalEntry> getJournalEntryById(@PathVariable String myId){
+        ObjectId objectId = new ObjectId(myId);
+        //ObjectId myId = new ObjectId(myId); //this is used to convert the string id to object id, because in the database, the id is stored as object id
+
         //below statement is used to get the username of the user who is currently logged in
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
         User user = userService.findByUserName(userName);
-        List<JournalEntry> collect = user.getJournalEntries().stream().filter(x -> x.getId().equals(myId)).collect(Collectors.toList());
+        List<JournalEntry> collect = user.getJournalEntries().stream().filter(x -> x.getId().equals(objectId)).collect(Collectors.toList());
         //the upper filter is used to get the journal entry of the user by id
 
         if(!collect.isEmpty()){
-            Optional<JournalEntry> journalEntry = journalEntryService.findById(myId);
+            Optional<JournalEntry> journalEntry = journalEntryService.findById(objectId);
             if(journalEntry.isPresent()){
                 return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK);
             }
@@ -90,6 +100,7 @@ public class JournalEntryControllerV2 {
     }
 
     @DeleteMapping("id/{myId}")
+    @Operation(summary = "Delete a journal entry by its id")
     public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
@@ -103,6 +114,7 @@ public class JournalEntryControllerV2 {
     }
 
     @PutMapping("id/{myId}")
+    @Operation(summary = "Update a journal entry by its id")
     public ResponseEntity<?> updateJournalEntryById(@PathVariable ObjectId myId, @RequestBody JournalEntry newEntry){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userName = authentication.getName();
