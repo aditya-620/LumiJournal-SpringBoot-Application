@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import com.adityarastogi.lumiJournal.cache.AppCache;
 import com.adityarastogi.lumiJournal.entity.JournalEntry;
 import com.adityarastogi.lumiJournal.entity.User;
 import com.adityarastogi.lumiJournal.enums.Sentiment;
+import com.adityarastogi.lumiJournal.model.SentimentData;
 import com.adityarastogi.lumiJournal.repository.UserRepositoryImpl;
 import com.adityarastogi.lumiJournal.service.EmailService;
 
@@ -30,6 +32,9 @@ public class UserScheduler {
 
     @Autowired
     private UserRepositoryImpl userRepositoryImpl;
+
+    @Autowired
+    private KafkaTemplate<String, SentimentData> kafkaTemplate;
 
     // Send email to users every sunday at 9 AM
     @Scheduled(cron = "0 0 9 * * SUN")
@@ -60,7 +65,12 @@ public class UserScheduler {
             }
 
             if(mostFrequentSentiment!=null){
-                emailService.sendEmail(user.getEmail(), "Sentiment for last 7 days: ", mostFrequentSentiment.toString());
+                SentimentData sentimentData = SentimentData.builder().email(user.getEmail()).sentiment("Sentiment for last 7 days " + mostFrequentSentiment).build();
+                try{
+                    kafkaTemplate.send("weekly-sentiments", sentimentData.getEmail(), sentimentData);
+                }catch (Exception e){
+                    emailService.sendEmail(sentimentData.getEmail(), "Sentiment for previous week", sentimentData.getSentiment());
+                }
             }
 
 
